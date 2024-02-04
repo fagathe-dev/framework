@@ -1,0 +1,4 @@
+/vendor
+/var/logs
+/app/database.php
+/app/mailer.php
