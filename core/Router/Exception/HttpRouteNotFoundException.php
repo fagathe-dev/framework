@@ -7,9 +7,10 @@ final class HttpRouteNotFoundException extends Exception
 {
 
     public function __construct() {
-        $this->message = sprintf("No Route found route for \"%s %s\"", $this->getRequest()->getMethod(), $this->getRequest()->getPathInfo());
+        $this->message = sprintf('No Route found route for "%s %s"', $this->getRequest()->getMethod(), $this->getRequest()->getPathInfo());
         $this->code = 404;
-        $this->statusText = "Not Found";
+        $this->statusText = 'Not Found';
+        $this->name = 'HttpRouteNotFoundException';
     }
 
 }

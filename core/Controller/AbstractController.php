@@ -41,7 +41,8 @@ abstract class AbstractController
      * 
      * @return Response
      */
-    protected function render(string $path, array $data = [], int $status = Response::HTTP_OK): Response {
+    protected function render(string $path, array $data = [], int $status = Response::HTTP_OK): Response 
+    {
 
         $response = new Response();
         $response->headers->set("Content-Type","text/html");

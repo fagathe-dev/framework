@@ -9,6 +9,7 @@ final class HttpMethodNotFoundException extends Exception
         $this->message = sprintf("Unable to access route \"%s\" with %s. \n\r Only %s methods are allowed for this route.", $this->getRequest()->getPathInfo(), $this->getRequest()->getMethod(), join(', ', $allowedMethods));
         $this->code = 405;
         $this->statusText = "Method not allowed";
+        $this->name = 'HttpMethodNotFoundException';
     }
 
 }

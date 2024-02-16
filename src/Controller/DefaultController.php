@@ -9,10 +9,10 @@ final class DefaultController extends AbstractController
 {
     public function index(): Response
     {
-        dd($this->generateUrl("app.blo", [
+        $this->generateUrl("app.blo", [
             'id' => 10, 
             'idQS' => 'params'
-        ], UrlGenerator::ABSOLUTE_URL));
+        ], UrlGenerator::ABSOLUTE_URL);
 
         return $this->json([
             'message' => [

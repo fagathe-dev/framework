@@ -44,8 +44,7 @@ final class UrlGenerator
             }
             //code...
             if ($path === '') {
-                throw new UrlGeneratorException("Error Processing Request", 1);
-                
+                throw new UrlGeneratorException($name, $parameters);
             }
 
             if ($referenceType === self::ABSOLUTE_URL) {

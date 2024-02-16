@@ -12,12 +12,18 @@ use Twig\Environment;
 class Exception extends GlobalException
 {
     protected string $statusText = 'Internal Error';
+    protected string $name = 'Exeception';
 
     public function __construct(){
         $this->message = 'An exception occured when try to respond to your request !'; 
         $this->code = 500;
     }
-
+    
+    /**
+     * getTemplateDir
+     *
+     * @return string
+     */
     public function getTemplateDir(): string {
         if (APP_ENV !== 'dev') {
             if (defined('CUSTOM_ERROR_TEMPLATE_DIR') && $this->getFilesystem()->exists(CUSTOM_ERROR_TEMPLATE_DIR.DIRECTORY_SEPARATOR.'error.twig')) {
@@ -27,17 +33,32 @@ class Exception extends GlobalException
 
         return ERROR_TEMPLATE_DIR;
     }
-
+    
+    /**
+     * getTwig
+     *
+     * @return Environment
+     */
     public function getTwig(): Environment
     {
        return (new Twig($this->getTemplateDir()))->getLoader();
     }
-
+    
+    /**
+     * getRequest
+     *
+     * @return Request
+     */
     public function getRequest(): Request 
     {
         return Request::createFromGlobals();
     }
-
+    
+    /**
+     * render
+     *
+     * @return Response
+     */
     public function render(): Response
     {
         $request = $this->getRequest();
@@ -52,25 +73,54 @@ class Exception extends GlobalException
             'file' => $this->getFile(),
             '__toString' => $this->__toString(),
             'traceAsString' => $this->getTraceAsString(),
+            'name' => $this->name,
         ];
 
         if ($request->headers->get('content-type') === 'application/json') {
             $response = new JsonResponse($context, $this->getCode(), [
                 'content-type' => 'application/json'
             ], false);
+            $response->setStatusCode($this->code);
 
-            return $response->send();
+            $response->send();
+            die;
         } 
 
         $response = new Response();
         $response->headers->set("Content-Type","text/html");
-        $response->setStatusCode($this->code);
-        $template = $this->getFilesystem()->exists($this->getTemplateDir() . 'error-'. $this->code . '.twig') ? 'error-' . $this->code . '.twig' : 'error.twig';
-        $response->setContent($this->getTwig()->render($template, $context));
+        $response->setContent($this->getTwig()->render($this->getTemplate(), $context));
 
-        return $response->send();
+        $response->send();
+        die;
     }
+    
+    /**
+     * getTemplate
+     *
+     * @return string
+     */
+    private function getTemplate(): string 
+    {
+        if ($this->getFilesystem()->exists($this->getTemplateDir() . 'error-'. $this->code . '.twig')) {
+            return 'error-'. $this->code . '.twig';
+        }
+        
+        if (APP_ENV === 'dev') {
+            if (defined('CUSTOM_ERROR_TEMPLATE_DIR') && $this->getFilesystem()->exists(CUSTOM_ERROR_TEMPLATE_DIR.DIRECTORY_SEPARATOR.'error-dev.twig')) {
+                return 'error-dev.twig';
+            } else {
+                return 'error-dev.twig';
+            }
+        }
 
+        return 'error.twig';
+    }
+    
+    /**
+     * getFilesystem
+     *
+     * @return Filesystem
+     */
     public function getFilesystem() :Filesystem 
     {
         return new Filesystem();
