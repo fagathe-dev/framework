@@ -1,6 +1,7 @@
 <?php 
 
 require_once "settings.php";
+require_once "database.php";
 
 define("DOCUMENT_ROOT",dirname(__DIR__));
 define("RESSOURCES_DIR",dirname(__DIR__) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR);

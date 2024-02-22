@@ -2,17 +2,16 @@
 namespace App\Controller;
 
 use Fagathe\Framework\Controller\AbstractController;
-use Fagathe\Framework\Router\UrlGenerator;
+use Fagathe\Framework\Database\Connection;
+use Fagathe\Framework\Database\Database;
+use Fagathe\Framework\Database\Table;
 use Symfony\Component\HttpFoundation\Response;
 
 final class DefaultController extends AbstractController
 {
     public function index(): Response
     {
-        $this->generateUrl("app.blo", [
-            'id' => 10, 
-            'idQS' => 'params'
-        ], UrlGenerator::ABSOLUTE_URL);
+        (new Table('user'))->generate();
 
         return $this->json([
             'message' => [
