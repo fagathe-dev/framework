@@ -8,6 +8,8 @@ use Symfony\Component\HttpFoundation\Request;
 final class Router 
 {
 
+     use RouterTrait;
+
      private $routes;
      private $params;
      private $action;
@@ -26,12 +28,12 @@ final class Router
           try {
                $location = $this->request->getPathInfo();
 
-               foreach ( $this->routes as $k => $route ) {
-                    if ( preg_match(Helpers::getUrlPattern($route->getPath()), $location) ) {
-                         $path = $route->getPath();
+               foreach ( $this->routes as $route ) {
+                    $urlPattern = $this->getUrlData($route);
+                    if ( preg_match($urlPattern, $location) ) {
                          if (in_array($this->request->getMethod(), $route->getMethods())) {
                               $this->action = $route->getAction();
-                              $this->params = Helpers::getUrlParams( explode('/', $path), explode('/', $location) );
+                              $this->params = $this->mapParams($this->getParams($route),$this->getUrlParams($urlPattern, $location));
                               
                               return $this->execute();
                          }
@@ -39,14 +41,12 @@ final class Router
                          throw new HttpMethodNotFoundException($route->getMethods());
                     }
                }
-
                throw new HttpRouteNotFoundException();
           } catch (HttpRouteNotFoundException $e) {
                $e->render();
           }  catch (HttpMethodNotFoundException $e) {
                $e->render();
           }  
-          // echo "<p>This <b style='color:red;'>'{$this->request->server('REQUEST_URI')}'</b> is not valid.</p><a href='/'> Retourner à la page d'accueil </a>";
           return ;
      }
 

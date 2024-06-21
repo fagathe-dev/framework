@@ -5,6 +5,8 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
 class Helpers
 {
+
+
      public function __construct(){}
 
      /**
@@ -90,45 +92,6 @@ class Helpers
                $execute[":{$k}"] = $v;
           }
           return $execute;
-     }
-
-     /**
-      * Get URL params 
-      * @param array $path
-      * @param array $url
-      * @return array
-      */
-     public static function getUrlParams(array $path, array $url):array 
-     {
-          $params = [];
-          foreach ($path as $key => $value) {
-               if ( preg_match("#:#", $value) ) {
-                    $params[preg_replace('#:#', "", $value)] = $url[$key];
-               }
-          }
-          return $params;
-     } 
-
-     /**
-      * Get URL pattern
-      * @param string $path
-      * @return string
-      */
-     public static function getUrlPattern(string $path):string
-     {
-          $patterns = [
-               'slug' => '([\/A-Za-z0-9\-]+)',
-               'id' => '([0-9]+)',
-               's' => '(.*?)',
-               'token' => '(.*?)',
-          ]; 
-          $explode_path = explode('/', trim($path, '/'));
-          $parts = [];
-          foreach ( $explode_path as $p) {
-               $parts[] = preg_match("#:#", $p) ? $patterns[preg_replace('#:#', '', $p)] : $p;
-          }
-          $pattern = "#^" . self::putBefore('/', $parts) . "$#";
-          return $pattern;
      }
      
      /**
