@@ -3,3 +3,5 @@
 /app/database.php
 /app/mailer.php
 /launch-*.sh
+/var
+/logs

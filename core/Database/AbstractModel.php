@@ -35,21 +35,20 @@ class AbstractModel
     }
 
     /**
-     * Get items from pdo
-    * @param integer $int
-    * @return mixed
-    */
-    public function findBy(string $args = "")
+     * @param array $criteria
+     * @param array|string $field
+     * 
+     * @return null|object[]|array[]
+     */
+    public function findBy(array $criteria = [], ?int $offset = 0, ?int $limit = null):mixed
     {
-        $field = explode('.', $args)[0];
-        $value = explode('.', $args)[1];
-        $sql = "SELECT * FROM {$this->table} WHERE {$field} = :{$field}";
+        $sql = "SELECT * FROM {$this->table} WHERE {$this->getWhereTables($criteria)}";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([":{$field}" => $value]);
+        $stmt->execute(Helpers::transformKeys($criteria));
         if( $stmt->rowCount() === 1 ) {               
             return $this->class !== "" ? new $this->class($stmt->fetch()) : $stmt->fetch();
         } else if ( $stmt->rowCount() > 1 ) {
-            return $this->class !== "" ? $this->getInstances($stmt->fetchAll(), $this->class) : $stmt->fetchAll();
+            return $this->class !== "" ? $this->getInstances($stmt->fetchAll()) : $stmt->fetchAll();
         } else if ( $stmt->rowCount() < 1 ) {
             return [];
         }
@@ -92,7 +91,7 @@ class AbstractModel
         $sql = "INSERT INTO {$this->table} SET {$this->getSetTables($data)}";
         $stmt = $this->pdo->prepare($sql);
         if ( $stmt->execute( Helpers::transformKeys($data) )  ){
-            return $last_insert === true ? $this->find((int) $this->pdo->lastInsertId(), $this->class) : true;
+            return $last_insert === true ? $this->find((int) $this->pdo->lastInsertId()) : true;
         }
         return false;
     }  
@@ -104,14 +103,14 @@ class AbstractModel
     * @param boolean $object
     * @return mixed
     */
-    public function update(array $set = [], array $where = [], bool $object = false) 
+    public function update(array $set = [], array $where = [], bool $object = true) 
     {
         $sql = "UPDATE {$this->table} SET {$this->getSetTables($set)} ";  
         if ( count($where) > 0 ) $sql .= "WHERE {$this->getWhereTables($where)}"; 
         $stmt = $this->pdo->prepare($sql); 
         $data = array_merge($set, $where);
         if ( $stmt->execute(Helpers::transformKeys($data)) ) {
-            return $object === true ? $this->find((int) $where['id'], $this->class) : true;
+            return $object === true ? $this->find((int) $where['id']) : true;
         }
         return false;
     }
@@ -152,7 +151,16 @@ class AbstractModel
         foreach ($data as $k => $v){
             $where[] = "{$k} = :{$k}";
         }
-        return join(' AND ', $where);
+        if ( count($where) === 1 ) {
+            return $where[0];
+        }
+        if ( count($where) === 2) {
+            return join(' AND ', $where);
+        }
+        $str = join(' , ', array_slice($where, 0, -1));
+        $last = array_pop($where);
+
+        return join(' AND ', [...$where, $last]);
     }
 
     /**

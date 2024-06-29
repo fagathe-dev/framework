@@ -1,4 +1,5 @@
 <?php
+namespace Fagathe\Framework\Security;
 
 final class PasswordHasher
 {
@@ -8,16 +9,16 @@ final class PasswordHasher
     public function __construct() {
     }
 
-    public function isVadid(string $plainPassword):bool 
+    public static function isValid(string $plainPassword):bool 
     {
-        return preg_match(self::REGEX,$plainPassword);
+        return preg_match(static::REGEX, $plainPassword);
     }
 
-    public function verify(string $plainPassword, string $hash): bool {
+    public static function verify(string $plainPassword, string $hash): bool {
         return password_verify($plainPassword, $hash);
     }
 
     public static function hash(string $password): string {
-        return password_hash($password, PASSWORD_ARGON2I);
+        return password_hash($password, PASSWORD_HASH_ALGO);
     }
 }

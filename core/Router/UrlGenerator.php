@@ -14,35 +14,36 @@ final class UrlGenerator
 
     public Request $request;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->request = Request::createFromGlobals();
     }
 
-    public function generate(string $name, array $parameters = [], int $referenceType = self::RELATIVE_URL):string
+    public function generate(string $name, array $parameters = [], int $referenceType = self::RELATIVE_URL): string
     {
         $routes = APP_ROUTES;
         $path = '';
 
         try {
-            foreach($routes as $route) {
-                if ( $route->getName() === $name ) {
+            foreach ($routes as $route) {
+                if ($route->getName() === $name) {
                     $path = $route->getPath();
                     $queryString = [];
 
-                    if ( count($parameters) > 0 ) {               
-                        foreach ( $parameters as $k => $p) {
-                            if ( preg_match("#:{$k}#", $path) ) {
-                                $path = preg_replace("#:{$k}#", $p, $path);                
+                    if (count($parameters) > 0) {
+                        foreach ($parameters as $k => $p) {
+                            $pattern = '#{' . $k . '}#';
+                            if (preg_match($pattern, $path)) {
+                                $path = preg_replace($pattern, $p, $path);
                             } else {
-                                $queryString = [...$queryString, is_int($k) ? $p : $k . '='. $p];
+                                $queryString = [...$queryString, is_int($k) ? $p : $k . '=' . $p];
                             }
                         }
                     }
 
-                    $path .= count($queryString) > 0 ? '?' . join('&', $queryString) :'';
+                    $path .= count($queryString) > 0 ? '?' . join('&', $queryString) : '';
                 }
             }
-            //code...
             if ($path === '') {
                 throw new UrlGeneratorException($name, $parameters);
             }
