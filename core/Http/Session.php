@@ -81,9 +81,12 @@ class Session
     }
 
     /**
+     * @param string $key
+     * @param string|array $value
+     * 
      * @return array
      */
-    public function addFlash(string $key, string $value): void
+    public function addFlash(string $key, string|array $value): void
     {
         $_SESSION['flashes'] = [$key => $value];
     }

@@ -28,6 +28,8 @@ final class DefaultController extends AbstractController
             'confirmed' => true,
             'updated_at' => $this->__toString(),
         ];
+        $user = (new UserModel())->findOneBy(['username' => 'admin2']);
+        $toto = ['id', 'desc'];
 
         $logger->error('test message log with json data ' . json_encode($data, JSON_INVALID_UTF8_IGNORE));
         $session = new Session;
@@ -37,7 +39,6 @@ final class DefaultController extends AbstractController
         dump($this->generateUrl('app.blog', ['id' => 4, 'slug' => 'mon-super-article', 'origin' => 'BACKLINK']));
 
 
-        $user = (new UserModel())->findBy(['username' => 'admin2']);
         // if ($user instanceof User) {
         //     dd(PasswordHasher::verify('admin', $user->getPassword()));
         // }
