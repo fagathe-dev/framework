@@ -1,5 +1,5 @@
 <?php
-namespace Fagathe\Framework\Security;
+namespace Fagathe\Framework\Security\Guard;
 
 use Fagathe\Framework\Http\Session;
 

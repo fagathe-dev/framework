@@ -5,6 +5,7 @@ use App\Entity\User;
 use App\Model\UserModel;
 use Fagathe\Framework\Http\Session;
 use Fagathe\Framework\Logger\Logger;
+use Fagathe\Framework\Security\Guard\CustomAuthenticationMessage;
 use Fagathe\Framework\Token\Token;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +19,7 @@ final class Auth
     private const LOGIN_PAGE = '/login';
     private const DEFAULT_REDIRECT_ROUTE = '/';
     private const DEFAULT_AUTH_TOKEN_KEY = 'X_AUTH_TOKEN';
-    private const DEFAULT_REMEMBER_ME_KEY = 'REMEMBER_ME';
+    public const DEFAULT_REMEMBER_ME_KEY = 'REMEMBER_ME';
     private UserModel $userModel;
     private Session $session;
     private Request $request;
@@ -76,7 +77,6 @@ final class Auth
                     $this->userModel->update(compact('token'), ['id' => $user->getId()]);
                 }
 
-
                 // Add Remember me to save user credentials
                 $this->remember_me($user);
 
@@ -86,13 +86,16 @@ final class Auth
 
                 // Redirect to home page
                 (new RedirectResponse(self::DEFAULT_REDIRECT_ROUTE))->send();
+                exit;
             } else {
                 $this->logger->error(__METHOD__ . ' ::: User ' . $username . ' failed to log in.');
                 $this->errorMessage(self::INVALID_CREDENTIALS);
+                exit;
             }
         } else {
             $this->logger->error(__METHOD__ . ' ::: unknown User ' . $username . ' to log in.');
             $this->errorMessage(self::INVALID_CREDENTIALS);
+            exit;
         }
 
     }
@@ -104,10 +107,10 @@ final class Auth
      */
     private function errorMessage(string $message): void
     {
-        $this->session->addFlash('authentication_error', [
-            'type' => self::AUTHENTICATION_ERROR,
+        $this->session->addFlash([
             'message' => $message,
-        ]);
+            'type' => self::AUTHENTICATION_ERROR,
+        ], 'authentication_error');
     }
 
     /**
@@ -124,13 +127,29 @@ final class Auth
                 'username' => $user->getUsername(),
                 'expired_at' => (new \DateTimeImmutable())->modify('+2 month')->format('Y-m-d H:i:s')
             ]);
-            $this->request->cookies->set(self::DEFAULT_REMEMBER_ME_KEY, base64_encode($rememberMeData));
-            $this->logger->info(__METHOD__ . ' :::  Persist User Credentials ' . $user->getUsername() . ' remembered.');
+            setcookie(self::DEFAULT_REMEMBER_ME_KEY, base64_encode($rememberMeData), expires_or_options: time() + 60 * 60 * 24 * 60);
+
+            $this->logger->info(sprintf('%s  :::  Persist User Credentials  %s  remembered.', __METHOD__, $user->getUsername()));
         }
     }
 
-    private function checkRememberMe(): void
+    public function loginRememberMe(): void
     {
+        $rememberMe = $this->getRememberMe();
+        if ($rememberMe !== null) {
+            $user = $this->userModel->findOneBy(['username' => $rememberMe['username']]);
+            if ($user instanceof User) {
+                if (PasswordHasher::verify($rememberMe['password'], $user->getPassword())) {
+                    $this->persist($user->getToken());
+                    $this->logger->info(sprintf('%s  :::  User %s remembered.', __METHOD__, $user->getUsername()));
+                    (new RedirectResponse(self::DEFAULT_REDIRECT_ROUTE))->send();
+                    exit();
+                }
+                $this->logger->info(sprintf('%s  :::  User %s remembered had wrong credentials.', __METHOD__, $user->getUsername()));
+                exit();
+            }
+            exit();
+        }
     }
 
     /**

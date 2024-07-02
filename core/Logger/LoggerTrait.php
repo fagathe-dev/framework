@@ -2,6 +2,7 @@
 namespace Fagathe\Framework\Logger;
 
 use DateTimeImmutable;
+use DateTimeZone;
 use Symfony\Component\Filesystem\Filesystem;
 
 trait LoggerTrait
@@ -12,12 +13,12 @@ trait LoggerTrait
      */
     public function getDate(): string
     {
-        return (new DateTimeImmutable())->format('d-m-Y');
+        return (new DateTimeImmutable(timezone: new DateTimeZone(DEFAULT_DATE_TIMEZONE)))->format('d-m-Y');
     }
 
     public function getCurrentTime(): string
     {
-        return (new DateTimeImmutable())->format('d-m-Y H:i:s');
+        return (new DateTimeImmutable(timezone: new DateTimeZone(DEFAULT_DATE_TIMEZONE)))->format('d-m-Y H:i:s');
     }
 
     /**
