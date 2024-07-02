@@ -102,6 +102,7 @@ final class Twig
         });
 
         $app = [
+            'flashes'=> $this->session->getFlashBag(),
             'router' => $this->session->get('router', []),
             'env' => APP_ENV,
             'debug_mode' => APP_DEBUG,

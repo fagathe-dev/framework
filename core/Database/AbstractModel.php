@@ -69,7 +69,6 @@ class AbstractModel
         if (count($sqlParts) > 0) {
             $sql .= ' ' . join(" ", $sqlParts);
         }
-        dd($sql);
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(Helpers::transformKeys($criteria));

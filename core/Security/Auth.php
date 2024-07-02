@@ -64,7 +64,7 @@ final class Auth
             return;
         }
 
-        $user = $this->userModel->findOneBy(compact('username'));
+        $user = $this->userModel->findOneByUsername($username);
         $this->logger->info(__METHOD__ . ' ::: User ' . $username . ' trying to log in.');
         if ($user instanceof User) {
             // Check if password is correct
@@ -76,6 +76,9 @@ final class Auth
                     $token = Token::generate(length: 60, unique: true);
                     $this->userModel->update(compact('token'), ['id' => $user->getId()]);
                 }
+
+                // Persist user in session
+                $this->persist($token);
 
                 // Add Remember me to save user credentials
                 $this->remember_me($user);
@@ -137,9 +140,9 @@ final class Auth
     {
         $rememberMe = $this->getRememberMe();
         if ($rememberMe !== null) {
-            $user = $this->userModel->findOneBy(['username' => $rememberMe['username']]);
+            $user = $this->userModel->findOneByUsername($rememberMe['username']);
             if ($user instanceof User) {
-                if (PasswordHasher::verify($rememberMe['password'], $user->getPassword())) {
+                if ($rememberMe['password'] === $user->getPassword()) {
                     $this->persist($user->getToken());
                     $this->logger->info(sprintf('%s  :::  User %s remembered.', __METHOD__, $user->getUsername()));
                     (new RedirectResponse(self::DEFAULT_REDIRECT_ROUTE))->send();
@@ -148,6 +151,7 @@ final class Auth
                 $this->logger->info(sprintf('%s  :::  User %s remembered had wrong credentials.', __METHOD__, $user->getUsername()));
                 exit();
             }
+            $this->logger->info(sprintf('%s  :::  REMEMBER_ME user does not exist in database.', __METHOD__));
             exit();
         }
     }
@@ -170,5 +174,9 @@ final class Auth
      */
     public static function logout(): void
     {
+        $session = new Session();
+        $session->remove(self::DEFAULT_REMEMBER_ME_KEY);
+        (new RedirectResponse(self::DEFAULT_REDIRECT_ROUTE))->send();
+        exit();
     }
 }
