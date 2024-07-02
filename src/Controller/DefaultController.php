@@ -9,6 +9,8 @@ use Fagathe\Framework\Http\Session;
 use Fagathe\Framework\Logger\Logger;
 use Fagathe\Framework\Router\UrlGenerator;
 use Fagathe\Framework\Security\PasswordHasher;
+use Fagathe\Framework\Token\Token;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 final class DefaultController extends AbstractController
@@ -34,7 +36,11 @@ final class DefaultController extends AbstractController
         $logger->error('test message log with json data ' . json_encode($data, JSON_INVALID_UTF8_IGNORE));
         $session = new Session;
         $session->addFlash('success', 'User created successfully');
+        $hash = PasswordHasher::hash('admin');
+        $encoded = base64_encode($hash);
+        dump($encoded, base64_decode($encoded));
         dump($session->getFlashBag());
+        dump(Token::generate(length: 60, unique: true));
         dump($session->get('flashes'));
         dump($this->generateUrl('app.blog', ['id' => 4, 'slug' => 'mon-super-article', 'origin' => 'BACKLINK']));
 
