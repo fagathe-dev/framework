@@ -1,6 +1,7 @@
 <?php
 namespace Fagathe\Framework\Twig;
 
+use Fagathe\Framework\Form\Form;
 use Fagathe\Framework\Http\Session;
 use Fagathe\Framework\Router\UrlGenerator;
 use Symfony\Component\Filesystem\Filesystem;
@@ -56,7 +57,7 @@ final class Twig
             'cookies' => $this->request->cookies,
             'headers' => $this->request->headers,
             'requestUri' => $this->request->getRequestUri(),
-            'pathInfo'=> $this->request->getPathInfo(),
+            'pathInfo' => $this->request->getPathInfo(),
             'method' => $this->request->getMethod(),
             'origin' => $this->request->getSchemeAndHttpHost(),
         ];
@@ -73,6 +74,18 @@ final class Twig
         $dump = new TwigFunction('dump', function (...$args) {
             dump(...$args);
         });
+
+        $form_start = new TwigFunction('form_start', function (Form $form) {
+            return $form->start();
+        }, ['is_safe' => ['html']]);
+
+        $form_end = new TwigFunction('form_end', function (Form $form) {
+            return $form->start();
+        }, ['is_safe' => ['html']]);
+
+        $form_widget = new TwigFunction('form_widget', function (Form $form, string $name) {
+            return $form->widget($name);
+        }, ['is_safe' => ['html']]);
 
         $asset = new TwigFunction('asset', function (string $path, bool $isPublic = true) {
             if (str_contains($path, 'http')) {
@@ -102,7 +115,7 @@ final class Twig
         });
 
         $app = [
-            'flashes'=> $this->session->getFlashBag(),
+            'flashes' => $this->session->getFlashBag(),
             'router' => $this->session->get('router', []),
             'env' => APP_ENV,
             'debug_mode' => APP_DEBUG,
@@ -112,6 +125,9 @@ final class Twig
         ];
 
         $this->twig->addFunction($dump);
+        $this->twig->addFunction($form_start);
+        $this->twig->addFunction($form_widget);
+        $this->twig->addFunction($form_end);
         $this->twig->addFunction($asset);
         $this->twig->addFunction($url);
         $this->twig->addFunction($file_get_contents);

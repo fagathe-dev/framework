@@ -8,6 +8,8 @@ use Fagathe\Framework\Helpers\Helpers;
 class AbstractModel
 {
 
+    use Helpers;
+
     protected $table = "posts";
     protected $pdo;
     protected $class = self::class;
@@ -71,7 +73,7 @@ class AbstractModel
         }
 
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute(Helpers::transformKeys($criteria));
+        $stmt->execute($this->transformKeys($criteria));
         if ($stmt->rowCount() === 1) {
             return $this->class !== "" ? new $this->class($stmt->fetch()) : $stmt->fetch();
         } else if ($stmt->rowCount() > 1) {
@@ -92,7 +94,7 @@ class AbstractModel
     {
         $sql = "SELECT * FROM {$this->table} WHERE {$this->getWhereTables($criteria)} LIMIT 1 OFFSET 0;";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute(Helpers::transformKeys($criteria));
+        $stmt->execute($this->transformKeys($criteria));
         if ($stmt->rowCount() === 1) {
             return $this->class !== "" ? new $this->class($stmt->fetch()) : $stmt->fetch();
         } else if ($stmt->rowCount() > 1) {
@@ -138,7 +140,7 @@ class AbstractModel
     {
         $sql = "INSERT INTO {$this->table} SET {$this->getSetTables($data)}";
         $stmt = $this->pdo->prepare($sql);
-        if ($stmt->execute(Helpers::transformKeys($data))) {
+        if ($stmt->execute($this->transformKeys($data))) {
             return $last_insert === true ? $this->find((int) $this->pdo->lastInsertId()) : true;
         }
         return false;
@@ -158,7 +160,7 @@ class AbstractModel
             $sql .= "WHERE {$this->getWhereTables($where)}";
         $stmt = $this->pdo->prepare($sql);
         $data = array_merge($set, $where);
-        if ($stmt->execute(Helpers::transformKeys($data))) {
+        if ($stmt->execute($this->transformKeys($data))) {
             return $object === true ? $this->find((int) $where['id']) : true;
         }
         return false;

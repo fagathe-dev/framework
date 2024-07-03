@@ -1,4 +1,15 @@
 {% extends 'base.twig' %}
 
 {% block body %}
+
+  <div class="container">
+    <div class="p-4">
+      {% include 'forms/input-text.twig' %}
+      {{ form_start(form) }}
+      {{ form_widget(form, 'animal_totem') }}
+      {{ form_widget(form, 'message') }}
+      {{ form_end(form) }}
+    </div>
+  </div>
+
 {% endblock %}
