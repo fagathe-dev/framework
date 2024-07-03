@@ -28,7 +28,7 @@ final class DefaultController extends AbstractController
                 new TextareaField(
                     name: 'message',
                     label: 'Laissez nous un message !',
-                    attributes: ['class'=> 'form-control', 'rows' => 4, 'value' => 'Lorem ipsum dolor sit amet.'],
+                    attributes: ['class' => 'form-control', 'rows' => 4, 'value' => 'Lorem ipsum dolor sit amet.'],
                 )
             );
         return $this->render('index.twig', compact('form'));

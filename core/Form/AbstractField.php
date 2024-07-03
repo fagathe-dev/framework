@@ -45,12 +45,13 @@ abstract class AbstractField
      * @param string $name
      * @param int|bool|array|string $default
      * 
-     * @return [type]
+     * @return int|bool|array|string
      */
-    public function getAttribute(string $name, mixed $default = null)
+    public function getAttribute(string $name, mixed $default = null): mixed
     {
         return $this->attributes[$name] ?? $default;
     }
+    
     /**
      * @return array|null
      */
@@ -58,10 +59,10 @@ abstract class AbstractField
     {
         if (!array_key_exists('id', $this->attributes)) {
             $this->attributes['id'] = strtolower($this->skipAccents($this->name));
-        } 
+        }
         if (!array_key_exists('name', $this->attributes)) {
             $this->attributes['name'] = strtolower($this->skipAccents($this->name));
-        } 
+        }
 
         return $this->attributes;
     }

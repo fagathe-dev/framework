@@ -11,16 +11,15 @@ final class TextareaField extends AbstractField
 
     public function render(): string
     {
-        $value ='';
-        if ($this->getAttribute('value')) {
-            $value = $this->getAttribute('value');
-        }
-        return '<div class="form-group">' . ($this->label !== null ? (new Label($this->label, $this->name, ['class' => 'form-label']))->render() : '') . '<textarea type="text" id="' . $this->getName() . '"' . $this->getHTMLAttributes() . '>'. $value.'</textarea></div>';
+        return '<div class="form-group">' . ($this->label !== null ? (new Label($this->label, $this->name, ['class' => 'form-label']))->render() : '') . '<textarea type="text" id="' . $this->getName() . '"' . $this->getHTMLAttributes() . '>' . $this->getData() . '</textarea></div>';
     }
 
+    /**
+     * @return mixed
+     */
     public function getData(): mixed
     {
-
+        return $this->getAttribute('value', '');
     }
 
 }
