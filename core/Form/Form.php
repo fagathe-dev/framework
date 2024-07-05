@@ -15,7 +15,24 @@ final class Form
 
     public function __construct(public string $name = '', public array $fields = [], public array $attributes = [])
     {
+        $this->setUpAtributeFields();
         $this->mappedFields();
+    }
+
+    private function setUpAtributeFields(): void
+    {
+        if ($this->getAttribute('method') === null) {
+            $this->setAttribute('method', 'POST');
+        }
+    }
+
+    public function prefixFieldNames(): void
+    {
+        if ($this->getName() !== '') {
+            foreach ($this->getFields() as $f) {
+                $f->setName($this->getName() . '[' . $f->getName() . ']');
+            }
+        }
     }
 
     public function mappedFields(): void
@@ -67,12 +84,26 @@ final class Form
 
     /**
      * @param string $attribute
+     * @param int|bool|array|string $default
      * 
-     * @return mixed
+     * @return int|bool|array|string
      */
-    public function getAttribute(string $attribute): mixed
+    public function getAttribute(string $attribute, mixed $default = null): mixed
     {
-        return $this->attributes[$attribute];
+        return $this->attributes[$attribute] ?? $default;
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     * 
+     * @return self
+     */
+    public function setAttribute(string $name, mixed $value): self
+    {
+        $this->attributes[$name] = $value;
+
+        return $this;
     }
 
     /**
@@ -106,6 +137,7 @@ final class Form
      */
     public function start(): string
     {
+        $this->prefixFieldNames();
         return '<form' . $this->getHTMLAttributes() . ">";
     }
 

@@ -7,7 +7,7 @@ use Fagathe\Framework\Form\Label;
 final class TextareaField extends AbstractField
 {
 
-    private const CUSTOM_FIELD_ATTRIBUTES = ['name', 'onclick', 'list', 'placeholder', 'choices', 'onkeyup', 'oninput', 'minlength', 'maxlengeth', 'size'];
+    private const CUSTOM_FIELD_ATTRIBUTES = ['name', 'list', 'placeholder', 'choices', 'onkeyup', 'oninput', 'minlength', 'maxlengeth', 'size'];
 
     public function render(): string
     {

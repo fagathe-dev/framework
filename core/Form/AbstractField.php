@@ -34,11 +34,54 @@ abstract class AbstractField
     }
 
     /**
+     * @return string|null
+     */
+    public function getLabel(): ?string
+    {
+        $label = $this->getAttribute('label');
+        if ($label === false) {
+            $this->label = null;
+        }
+        if ($label !== null) {
+            $this->label = $label;
+        }
+
+        return $this->label;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        $id = $this->getAttribute('id');
+
+        if ($id === null) {
+            $this->attributes['id'] = strtolower($this->skipAccents($this->name));
+        }
+
+        return $this->name;
+    }
+
+    /**
      * Get the value of name
      */
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     * 
+     * @return self
+     */
+    public function setAttribute(string $name, mixed $value): self
+    {
+        $this->attributes[$name] = $value;
+
+        return $this;
     }
 
     /**
@@ -51,7 +94,7 @@ abstract class AbstractField
     {
         return $this->attributes[$name] ?? $default;
     }
-    
+
     /**
      * @return array|null
      */
@@ -67,6 +110,11 @@ abstract class AbstractField
         return $this->attributes;
     }
 
+    /**
+     * @param string $attribute
+     * 
+     * @return bool
+     */
     public function isAllowedAttribute(string $attribute): bool
     {
         return in_array($attribute, [
@@ -116,7 +164,7 @@ abstract class AbstractField
     {
         foreach ($this->getAttributes() as $name => $value) {
             $attr = match ($name) {
-                'required', 'disabled', 'readonly', 'autofocus' => $value === true ? $name : '',
+                'required', 'disabled', 'readonly', 'autofocus', 'multiple' => $value === true ? $name : '',
                 'choices' => '',
                 default => $name . '="' . $value . '"',
             };
@@ -125,5 +173,17 @@ abstract class AbstractField
         }
 
         return count($this->htmlAttributes) ? ' ' . join(' ', $this->htmlAttributes) : '';
+    }
+
+    /**
+     * Set the value of name
+     *
+     * @return  self
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
     }
 }

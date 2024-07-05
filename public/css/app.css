@@ -1,3 +1,4 @@
-body {
-    background-color: #f00;
+.form-group {
+  display: block;
+  margin-block: 0 1.12vh;
 }
