@@ -19,7 +19,7 @@ final class Twig
     private Session $session;
     private Request $request;
 
-    public function __construct(public string $templateDir = TEMPLATE_DIR)
+    public function __construct(public string|array $templateDir = [TEMPLATE_DIR, VIEWS_DIR])
     {
         $this->fs = new Filesystem;
         $this->session = new Session();

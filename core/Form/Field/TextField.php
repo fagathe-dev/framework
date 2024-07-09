@@ -1,13 +1,13 @@
 <?php
-namespace Fagathe\Framework\Form;
+namespace Fagathe\Framework\Form\Field;
 
-use Fagathe\Framework\Form\AbstractField;
-use Fagathe\Framework\Form\Label;
+use Fagathe\Framework\Form\Field\AbstractField;
+use Fagathe\Framework\Form\Field\Label;
 
 final class TextField extends AbstractField
 {
 
-    private const CUSTOM_FIELD_ATTRIBUTES = ['name', 'list', 'placeholder', 'choices', 'onkeyup', 'oninput', 'minlength', 'maxlengeth', 'size'];
+    protected const CUSTOM_FIELD_ATTRIBUTES = ['name', 'list', 'placeholder', 'choices', 'onkeyup', 'oninput', 'minlength', 'maxlengeth', 'size'];
 
     /**
      * @return string

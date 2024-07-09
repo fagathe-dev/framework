@@ -1,10 +1,15 @@
 <?php
 namespace Fagathe\Framework\Form;
 
+use Fagathe\Framework\Form\Field\AbstractField;
+use Fagathe\Framework\Form\Exception\NotAllowedAttributeException;
+use Symfony\Component\HttpFoundation\Request;
+
 final class Form
 {
 
     private const ALLOWED_FORM_ATTRIBUTES = ['action', 'method', 'name', 'onsubmit', 'autocomplete', 'enctype',];
+    private const ALLOWED_FORM_METHODS = ['GET', 'POST'];
 
     /**
      * @var array
@@ -12,13 +17,18 @@ final class Form
     protected array $htmlAttributes = [];
 
     private array $mappedFields = [];
+    private ?Request $request = null;
 
-    public function __construct(public string $name = '', public array $fields = [], public array $attributes = [])
+    public function __construct(public string $name = '', private array $data = [], public array $fields = [], public array $attributes = [])
     {
         $this->setUpAtributeFields();
         $this->mappedFields();
+        $this->setData($data);
     }
 
+    /**
+     * @return void
+     */
     private function setUpAtributeFields(): void
     {
         if ($this->getAttribute('method') === null) {
@@ -26,6 +36,25 @@ final class Form
         }
     }
 
+    /**
+     * @return string
+     */
+    private function getMethod(): ?string
+    {
+        try {
+            $method = strtoupper($this->getAttribute('method'));
+            if (!in_array($method, self::ALLOWED_FORM_METHODS)) {
+                throw new NotAllowedAttributeException('Method not allowed');
+            }
+            return $this->getAttribute('method');
+        } catch (NotAllowedAttributeException $e) {
+            return $e->render();
+        }
+    }
+
+    /**
+     * @return void
+     */
     public function prefixFieldNames(): void
     {
         if ($this->getName() !== '') {
@@ -35,6 +64,75 @@ final class Form
         }
     }
 
+    /**
+     * @param Request $request
+     * 
+     * @return self
+     */
+    public function setRequest(Request $request): self
+    {
+        $this->request = $request;
+
+        return $this;
+    }
+
+    /**
+     * @return void
+     */
+    public function handleRequest(Request $request): void
+    {
+        $method = $request->getMethod();
+        $this->request = $request;
+        if ($method === $this->getMethod()) {
+            $data = $request->request->all()[$this->getName()] ?? $request->query->all() ?? null;
+            foreach ($data as $key => $value) {
+                $field = $this->get($key);
+                if (!is_null($field)) {
+                    $field->setData($value);
+                }
+            }
+        }
+    }
+
+    /**
+     * Return an array of data from the form
+     * 
+     * @return array
+     */
+    public function getFormData(): array
+    {
+        if ($this->request === null) {
+            return [];
+        }
+        if ($this->request->isMethod('POST')) {
+            return $this->request->request->all()[$this->getName()] ?? [];
+        }
+
+        if ($this->request->isMethod('GET')) {
+            return $this->request->query->all()[$this->getName()] ?? [];
+        }
+        return [];
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSubmitted(): bool
+    {
+        if ($this->request === null) {
+            return false;
+        }
+
+        if ($this->request->isMethod('POST') || $this->request->isMethod('GET')) {
+            return $this->request->request->has($this->getName()) || $this->request->query->has($this->getName());
+        }
+
+        return $this->getAttribute('method');
+    }
+
+    /**
+     * @return void
+     */
     public function mappedFields(): void
     {
         foreach ($this->getFields() as $field) {
@@ -141,6 +239,11 @@ final class Form
         return '<form' . $this->getHTMLAttributes() . ">";
     }
 
+    /**
+     * @param string $name
+     * 
+     * @return string
+     */
     public function widget(string $name): string
     {
         return $this->mappedFields[$name]->render();
@@ -161,5 +264,60 @@ final class Form
     public function getFields()
     {
         return $this->fields;
+    }
+
+    /**
+     * @param string $name
+     * 
+     * @return AbstractField
+     */
+    public function get(string $name): ?AbstractField
+    {
+        return $this->mappedFields[$name] ?? null;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData(): array
+    {
+        return $this->getFormData();
+    }
+
+    /**
+     * @param array $data
+     * 
+     * @return self
+     */
+    private function __hydrate(array $data): self
+    {
+        foreach ($data as $key => $value) {
+            $field = $this->get($key);
+            if (!is_null($field)) {
+                if (json_validate($value)) {
+                    $value = json_decode($value);
+                }
+                $field->setData($value);
+
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param array $data
+     * 
+     * @return self
+     */
+    public function setData(array $data): self
+    {
+        if ($this->isSubmitted() === true) {
+            $this->__hydrate($this->getFormData());
+        } else {
+            $this->__hydrate($data);
+        }
+
+        return $this;
     }
 }

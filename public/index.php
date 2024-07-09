@@ -1,17 +1,15 @@
 <?php
 
 require_once '../app/globale.php';
-require_once '../functions.php';
-require_once DOCUMENT_ROOT . DIRECTORY_SEPARATOR . 'vendor/autoload.php';
+require_once DOCUMENT_ROOT . '/vendor/autoload.php';
 
+use Fagathe\Framework\Env\Env;
 use Fagathe\Framework\Router\Router;
 // use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 
-$routes = require  DOCUMENT_ROOT . DIRECTORY_SEPARATOR . 'app/routes.php';
+$routes = require  DOCUMENT_ROOT .'/app/routes.php';
 define('APP_ROUTES', $routes);
+Env::load();
 
-$request = Request::createFromGlobals();
-// $filesystem = new Filesystem;
-// $filesystem->appendToFile(DOCUMENT_ROOT . DIRECTORY_SEPARATOR .'logs.txt', 'log ::: ' . (new DateTimeImmutable())->format('Y-m-d H:i:s') . "\n");
 (new Router(APP_ROUTES))->match();

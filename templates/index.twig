@@ -7,8 +7,9 @@
       {% include 'forms/input-text.twig' %}
       {{ form_start(form) }}
       {{ form_widget(form, 'animal_totem') }}
+      {{ form_widget(form, 'email') }}
       {{ form_widget(form, 'message') }}
-      {{ form_widget(form, 'role') }}
+      {{ form_widget(form, 'roles') }}
       <button type="submit" class="btn btn-primary">Envoyer</button>
       {{ form_end(form) }}
     </div>

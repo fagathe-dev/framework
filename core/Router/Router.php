@@ -1,6 +1,7 @@
 <?php
 namespace Fagathe\Framework\Router;
 
+use Fagathe\Framework\Exception\Exception;
 use Fagathe\Framework\Http\Session;
 use Fagathe\Framework\Router\Exception\HttpMethodNotFoundException;
 use Fagathe\Framework\Router\Exception\HttpRouteNotFoundException;
@@ -48,7 +49,8 @@ final class Router
                               $this->setRouteInfos('controller.method', explode('@', $this->action)[1]);
                               $this->setRouteInfos('route.params', $this->params);
 
-                              return $this->execute();
+                              $this->execute();
+                              exit();
                          }
 
                          throw new HttpMethodNotFoundException($route->getMethods());
@@ -92,12 +94,15 @@ final class Router
       */
      public function execute(): mixed
      {
+          try {
+               $values = explode("@", $this->action);
+               $controller = new $values[0]();
+               $method = $values[1];
 
-          $values = explode("@", $this->action);
-          $controller = new $values[0]();
-          $method = $values[1];
-
-          return isset($this->params) ? $controller->$method($this->params) : $controller->$method();
+               return isset($this->params) ? $controller->$method($this->params) : $controller->$method();
+          } catch (Exception $e) {
+               $e->render();
+          }
      }
 
 }

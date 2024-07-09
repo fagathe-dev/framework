@@ -1,13 +1,13 @@
 <?php
-namespace Fagathe\Framework\Form;
+namespace Fagathe\Framework\Form\Field;
 
-use Fagathe\Framework\Form\AbstractField;
-use Fagathe\Framework\Form\Label;
+use Fagathe\Framework\Form\Field\AbstractField;
+use Fagathe\Framework\Form\Field\Label;
 
 final class SelectField extends AbstractField
 {
 
-    private const CUSTOM_FIELD_ATTRIBUTES = ['name', 'list', 'placeholder', 'choices', 'multiple', 'selected'];
+    protected const CUSTOM_FIELD_ATTRIBUTES = ['name', 'list', 'placeholder', 'choices', 'multiple', 'selected'];
     private const DEFAULT_PLACEHOLDER_LABEL = '---- Selectionnez une valeur ----';
 
     public function render(): string
@@ -25,18 +25,31 @@ final class SelectField extends AbstractField
                 }
             }
             foreach ($choices as $k => $v) {
-                $options .= '<option value="' . $k . '"' . ($k === $this->getAttribute('value') ? ' selected' : '') . '>' . $v . '</option>';
+                $val = $this->getData();
+                $selected = false;
+                if (is_array($val)) {
+                    $selected = in_array($k, $val);
+                } else {
+                    $selected = $k === $val;
+                }
+                $options .= '<option value="' . $k . '"' . ($selected ? 'selected' : '') . '>' . $v . '</option>';
             }
         }
         return '<div class="form-group">' . ($this->label !== null ? (new Label($this->label, $this->name, ['class' => 'form-label']))->render() : '') . '<select class="form-select" id="' . $this->getName() . '"' . $this->getHTMLAttributes() . '>' . $options . '</select></div>';
     }
 
     /**
-     * @return mixed
+     * @return null|string|array
      */
     public function getData(): mixed
     {
-        return $this->getAttribute('value', '');
+        $value = $this->getAttribute('value', '');
+        if (is_string($value)) {
+            $encodedValue = json_decode($value);
+            $value = is_array($encodedValue) ? $encodedValue : $value;
+        }
+
+        return $value;
     }
 
 }

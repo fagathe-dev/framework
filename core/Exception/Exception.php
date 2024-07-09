@@ -2,6 +2,7 @@
 namespace Fagathe\Framework\Exception;
 
 use Exception as GlobalException;
+use Fagathe\Framework\Logger\Logger;
 use Fagathe\Framework\Twig\Twig;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -75,6 +76,9 @@ class Exception extends GlobalException
             'traceAsString' => $this->getTraceAsString(),
             'name' => $this->name,
         ];
+
+        $logger = new Logger();
+        $logger->error($this->getMessage(), json_encode($context));
 
         if ($request->headers->get('content-type') === 'application/json') {
             $response = new JsonResponse($context, $this->getCode(), [

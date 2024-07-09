@@ -64,6 +64,9 @@ class User extends AbstractEntity
      */
     public function getRoles(): ?array
     {
+        if (is_string($this->roles)) {
+            $this->roles = json_decode($this->roles);
+        }
         return $this->roles;
     }
 

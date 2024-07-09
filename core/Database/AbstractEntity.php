@@ -14,9 +14,9 @@ abstract class AbstractEntity
      * @param  mixed $data
      * @return void
      */
-    public function __construct(array $data)
+    public function __construct(private ?array $data = [])
     {
-        $this->_hydrate($data);
+        $this->__hydrate($data);
     }
 
     /**
@@ -24,14 +24,15 @@ abstract class AbstractEntity
      *
      * @param  mixed $data
      *
-     * @return void
+     * @return static
      */
-    public function _hydrate(array $data)
+    public function __hydrate(array $data): self
     {
         foreach ($data as $k => $d):
             $method = 'set' . static::getMethod($k);
             method_exists($this, $method) ? $this->$method($d) : null;
         endforeach;
+        return $this;
     }
 
 
@@ -53,5 +54,10 @@ abstract class AbstractEntity
         $this->id = $id;
 
         return $this;
+    }
+
+    public function toArray(): array
+    {
+        return $this->data;
     }
 }

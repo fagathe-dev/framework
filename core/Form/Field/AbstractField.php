@@ -1,6 +1,7 @@
 <?php
-namespace Fagathe\Framework\Form;
+namespace Fagathe\Framework\Form\Field;
 
+use Fagathe\Framework\Form\Exception\NotAllowedAttributeException;
 use Fagathe\Framework\Helpers\Helpers;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -92,7 +93,14 @@ abstract class AbstractField
      */
     public function getAttribute(string $name, mixed $default = null): mixed
     {
+        // try {
+        //     if ($this->isAllowedAttribute($name) === false) {
+        //         throw new NotAllowedAttributeException("Attribute '" . $name . "' is not allowed. \n . Allowed attributes are: " . join(', ', $this->getAllowedAttributes()) . "\n");
+        //     }
         return $this->attributes[$name] ?? $default;
+        // } catch (NotAllowedAttributeException $e) {
+        //     return $e->render();
+        // }
     }
 
     /**
@@ -111,16 +119,24 @@ abstract class AbstractField
     }
 
     /**
+     * @return array
+     */
+    private function getAllowedAttributes(): array
+    {
+        return [
+            ...static::DEFAULT_FIELD_ATTRIBUTES,
+            ...(defined(static::class . '::CUSTOM_FIELD_ATTRIBUTES') ? constant(static::class . '::CUSTOM_FIELD_ATTRIBUTES') : []),
+        ];
+    }
+
+    /**
      * @param string $attribute
      * 
      * @return bool
      */
     public function isAllowedAttribute(string $attribute): bool
     {
-        return in_array($attribute, [
-            ...static::DEFAULT_FIELD_ATTRIBUTES,
-            ...[defined(static::class . '::CUSTOM_FIELD_ATTRIBUTES') ? static::CUSTOM_FIELD_ATTRIBUTES : []]
-        ]);
+        return in_array($attribute, $this->getAllowedAttributes());
     }
 
     /**
@@ -136,11 +152,12 @@ abstract class AbstractField
 
     /**
      * @param string|int|array|UploadedFile $value
-     * @return \Fagathe\Framework\Form\AbstractField
+     * @return self
      */
     public function setData(mixed $value): self
     {
         $this->value = $value;
+        $this->setAttribute('value', $value);
 
         return $this;
     }
@@ -166,7 +183,7 @@ abstract class AbstractField
             $attr = match ($name) {
                 'required', 'disabled', 'readonly', 'autofocus', 'multiple' => $value === true ? $name : '',
                 'choices' => '',
-                default => $name . '="' . $value . '"',
+                default => $name . '="' . (is_array($value) ? '' : $value) . '"',
             };
 
             $this->addHTMLAttributes($attr);

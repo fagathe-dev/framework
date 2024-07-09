@@ -1,5 +1,5 @@
 <?php
-namespace Fagathe\Framework\Form;
+namespace Fagathe\Framework\Form\Field;
 
 use Fagathe\Framework\Helpers\Helpers;
 
