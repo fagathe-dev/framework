@@ -1,7 +1,7 @@
 <?php
 
 // Set the application environnement : 'dev' | 'preprod' | 'prod'
-define('APP_ENV', 'prod');
+define('APP_ENV', 'dev');
 // Set true to enable DEBUG_MODE or false otherwise
 define('APP_DEBUG', true);
 
