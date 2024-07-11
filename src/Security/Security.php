@@ -1,8 +1,8 @@
 <?php
 namespace Fagathe\Framework\Security;
 
-use App\Entity\User;
-use App\Model\UserModel;
+use Fagathe\MonSite\Entity\User;
+use Fagathe\MonSite\Model\UserModel;
 use Fagathe\Framework\Http\Session;
 use Fagathe\Framework\Security\Exception\AccessDeniedException;
 use Fagathe\Framework\Security\Exception\SecurityException;

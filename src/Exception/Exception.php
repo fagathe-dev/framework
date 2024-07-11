@@ -20,7 +20,6 @@ class Exception extends GlobalException
     {
         $this->message = 'An exception occured when try to respond to your request !';
         $this->code = 500;
-        $this->logger = new Logger;
     }
 
     /**
@@ -92,7 +91,6 @@ class Exception extends GlobalException
             $response->send();
             die;
         }
-
         $response = new Response();
         $response->headers->set("Content-Type", "text/html");
         $response->setContent($this->getTwig()->render($this->getTemplate(), $context));
@@ -145,6 +143,7 @@ class Exception extends GlobalException
      */
     protected function log(string $message): void
     {
+        $this->logger = new Logger;
         $this->logger->error($message);
     }
 

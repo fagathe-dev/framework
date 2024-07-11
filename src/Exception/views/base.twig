@@ -72,7 +72,7 @@
                   ({% for k, a in t.args %}
                       {% if a|type == 'array' %}
                         [{% for k, arg in a %}
-                            {{ k ~ " = " ~ arg }}
+                            {{ k ~ " = " ~ (arg|type == 'object' or arg|type == 'array' ? arg|json_encode : arg)  }}
                           {% endfor %}]
                       {% else %}
                         {{ a }}

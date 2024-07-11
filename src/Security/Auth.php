@@ -1,8 +1,8 @@
 <?php
 namespace Fagathe\Framework\Security;
 
-use App\Entity\User;
-use App\Model\UserModel;
+use Fagathe\MonSite\Entity\User;
+use Fagathe\MonSite\Model\UserModel;
 use Fagathe\Framework\Http\Session;
 use Fagathe\Framework\Logger\Logger;
 use Fagathe\Framework\Security\Guard\CustomAuthenticationMessage;
@@ -40,7 +40,7 @@ final class Auth
 
     private function persist(string $token): void
     {
-       $token = base64_decode($token);
+        $token = base64_decode($token);
         // Store user in session
         $this->session->set(self::AUTH_TOKEN_KEY, $token);
         return;

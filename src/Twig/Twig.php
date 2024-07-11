@@ -1,7 +1,6 @@
 <?php
 namespace Fagathe\Framework\Twig;
 
-use Fagathe\Framework\Exception\Exception;
 use Fagathe\Framework\Form\Form;
 use Fagathe\Framework\Http\Session;
 use Fagathe\Framework\Logger\Logger;
@@ -9,7 +8,7 @@ use Fagathe\Framework\Router\UrlGenerator;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Twig\Environment;
-use Twig\Error\LoaderError;
+use Twig\Extension\DebugExtension;
 use Twig\Loader\FilesystemLoader;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -23,7 +22,7 @@ final class Twig
     private Request $request;
     private Logger $logger;
 
-    public function __construct(public string|array $templateDir = [TEMPLATE_DIR, VIEWS_DIR])
+    public function __construct(public string|array $templateDir = [TEMPLATE_DIR])
     {
         $this->fs = new Filesystem;
         $this->session = new Session();
@@ -39,6 +38,9 @@ final class Twig
      */
     public function getLoader(): Environment
     {
+        if (is_array($this->templateDir) && count($this->templateDir) === 1) {
+            $this->templateDir = array_pop($this->templateDir);
+        }
         $loader = new FilesystemLoader($this->templateDir);
 
         $this->twig = new Environment($loader, [
@@ -80,6 +82,7 @@ final class Twig
         $dump = new TwigFunction('dump', function (...$args) {
             dump(...$args);
         });
+
 
         $form_start = new TwigFunction('form_start', function (Form $form) {
             return $form->start();
@@ -130,6 +133,7 @@ final class Twig
             'version' => phpversion(),
         ];
 
+        $this->twig->addExtension(new DebugExtension());
         $this->twig->addFunction($dump);
         $this->twig->addFunction($form_start);
         $this->twig->addFunction($form_widget);

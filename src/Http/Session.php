@@ -10,7 +10,7 @@ class Session
 
     private function init(): ?bool
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
+        if (session_status() !== PHP_SESSION_DISABLED && session_status() !== PHP_SESSION_NONE) {
             return session_start();
         }
         return null;

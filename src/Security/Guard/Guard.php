@@ -1,8 +1,8 @@
 <?php
 namespace Fagathe\Framework\Security\Guard;
 
-use App\Entity\User;
-use App\Model\UserModel;
+use Fagathe\MonSite\Entity\User;
+use Fagathe\MonSite\Model\UserModel;
 use Fagathe\Framework\Security\Badge\Badge;
 use Fagathe\Framework\Security\CustomAuthenticationMessage;
 use Fagathe\Framework\Security\PasswordHasher;
