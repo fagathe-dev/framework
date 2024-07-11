@@ -1,12 +1,15 @@
 <?php
 namespace Fagathe\Framework\Twig;
 
+use Fagathe\Framework\Exception\Exception;
 use Fagathe\Framework\Form\Form;
 use Fagathe\Framework\Http\Session;
+use Fagathe\Framework\Logger\Logger;
 use Fagathe\Framework\Router\UrlGenerator;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Twig\Environment;
+use Twig\Error\LoaderError;
 use Twig\Loader\FilesystemLoader;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -18,12 +21,15 @@ final class Twig
     private Filesystem $fs;
     private Session $session;
     private Request $request;
+    private Logger $logger;
 
     public function __construct(public string|array $templateDir = [TEMPLATE_DIR, VIEWS_DIR])
     {
         $this->fs = new Filesystem;
         $this->session = new Session();
         $this->request = Request::createFromGlobals();
+        $this->logger = new Logger;
+
     }
 
     /**
@@ -136,6 +142,7 @@ final class Twig
         $this->twig->addGlobal('app', $app);
 
         return $this->twig;
+
     }
 
 }

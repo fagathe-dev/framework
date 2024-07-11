@@ -14,27 +14,31 @@ class Exception extends GlobalException
 {
     protected string $statusText = 'Internal Error';
     protected string $name = 'Exeception';
+    protected Logger $logger;
 
-    public function __construct(){
-        $this->message = 'An exception occured when try to respond to your request !'; 
+    public function __construct()
+    {
+        $this->message = 'An exception occured when try to respond to your request !';
         $this->code = 500;
+        $this->logger = new Logger;
     }
-    
+
     /**
      * getTemplateDir
      *
      * @return string
      */
-    public function getTemplateDir(): string {
+    public function getTemplateDir(): string
+    {
         if (APP_ENV !== 'dev') {
-            if (defined('CUSTOM_ERROR_TEMPLATE_DIR') && $this->getFilesystem()->exists(CUSTOM_ERROR_TEMPLATE_DIR.DIRECTORY_SEPARATOR.'error.twig')) {
+            if (defined('CUSTOM_ERROR_TEMPLATE_DIR') && $this->getFilesystem()->exists(CUSTOM_ERROR_TEMPLATE_DIR . DIRECTORY_SEPARATOR . 'error.twig')) {
                 return CUSTOM_ERROR_TEMPLATE_DIR;
             }
         }
 
         return ERROR_TEMPLATE_DIR;
     }
-    
+
     /**
      * getTwig
      *
@@ -42,19 +46,19 @@ class Exception extends GlobalException
      */
     public function getTwig(): Environment
     {
-       return (new Twig($this->getTemplateDir()))->getLoader();
+        return (new Twig($this->getTemplateDir()))->getLoader();
     }
-    
+
     /**
      * getRequest
      *
      * @return Request
      */
-    public function getRequest(): Request 
+    public function getRequest(): Request
     {
         return Request::createFromGlobals();
     }
-    
+
     /**
      * render
      *
@@ -77,8 +81,7 @@ class Exception extends GlobalException
             'name' => $this->name,
         ];
 
-        $logger = new Logger();
-        $logger->error($this->getMessage(), json_encode($context));
+        $this->log($this->getName() . '   ' . $this->getMessage() . '  :::  ' . json_encode($context));
 
         if ($request->headers->get('content-type') === 'application/json') {
             $response = new JsonResponse($context, $this->getCode(), [
@@ -88,29 +91,34 @@ class Exception extends GlobalException
 
             $response->send();
             die;
-        } 
+        }
 
         $response = new Response();
-        $response->headers->set("Content-Type","text/html");
+        $response->headers->set("Content-Type", "text/html");
         $response->setContent($this->getTwig()->render($this->getTemplate(), $context));
 
         $response->send();
         die;
     }
-    
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
     /**
      * getTemplate
      *
      * @return string
      */
-    private function getTemplate(): string 
+    private function getTemplate(): string
     {
-        if ($this->getFilesystem()->exists($this->getTemplateDir() . 'error-'. $this->code . '.twig')) {
-            return 'error-'. $this->code . '.twig';
+        if ($this->getFilesystem()->exists($this->getTemplateDir() . 'error-' . $this->code . '.twig')) {
+            return 'error-' . $this->code . '.twig';
         }
-        
+
         if (APP_ENV === 'dev') {
-            if (defined('CUSTOM_ERROR_TEMPLATE_DIR') && $this->getFilesystem()->exists(CUSTOM_ERROR_TEMPLATE_DIR.DIRECTORY_SEPARATOR.'error-dev.twig')) {
+            if (defined('CUSTOM_ERROR_TEMPLATE_DIR') && $this->getFilesystem()->exists(CUSTOM_ERROR_TEMPLATE_DIR . DIRECTORY_SEPARATOR . 'error-dev.twig')) {
                 return 'error-dev.twig';
             } else {
                 return 'error-dev.twig';
@@ -119,15 +127,25 @@ class Exception extends GlobalException
 
         return 'error.twig';
     }
-    
+
     /**
      * getFilesystem
      *
      * @return Filesystem
      */
-    public function getFilesystem() :Filesystem 
+    public function getFilesystem(): Filesystem
     {
         return new Filesystem();
     }
-    
+
+    /**
+     * @param string $message
+     * 
+     * @return void
+     */
+    protected function log(string $message): void
+    {
+        $this->logger->error($message);
+    }
+
 }

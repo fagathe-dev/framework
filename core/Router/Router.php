@@ -3,6 +3,7 @@ namespace Fagathe\Framework\Router;
 
 use Fagathe\Framework\Exception\Exception;
 use Fagathe\Framework\Http\Session;
+use Fagathe\Framework\Logger\Logger;
 use Fagathe\Framework\Router\Exception\HttpMethodNotFoundException;
 use Fagathe\Framework\Router\Exception\HttpRouteNotFoundException;
 use Fagathe\Framework\Security\Security;
@@ -20,6 +21,7 @@ final class Router
      private Session $session;
      private Security $security;
      private array $routerInfos = [];
+     private Logger $logger;
 
      public function __construct(array $routes)
      {
@@ -27,6 +29,7 @@ final class Router
           $this->request = Request::createFromGlobals();
           $this->session = new Session();
           $this->security = new Security();
+          $this->logger = new Logger;
      }
 
      public function match(): mixed
@@ -43,6 +46,7 @@ final class Router
                     $urlPattern = $this->getUrlData($route);
                     if (preg_match($urlPattern, $location)) {
                          if (in_array($this->request->getMethod(), $route->getMethods())) {
+                              $this->logger->debug('Route found for ' . $location);
                               $this->action = $route->getAction();
                               $this->params = $this->mapParams($this->getParams($route), $this->getUrlParams($urlPattern, $location));
                               $this->setRouteInfos('controller.class', explode('@', $this->action)[0]);
@@ -99,6 +103,7 @@ final class Router
                $controller = new $values[0]();
                $method = $values[1];
 
+               $this->logger->debug('Access to controller ' . $controller . '::' . $method . ' with params ' . json_encode($this->params));
                return isset($this->params) ? $controller->$method($this->params) : $controller->$method();
           } catch (Exception $e) {
                $e->render();

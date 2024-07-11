@@ -2,14 +2,24 @@
 namespace Fagathe\Framework\Controller;
 
 use Fagathe\Framework\Form\Form;
+use Fagathe\Framework\Logger\Logger;
 use Fagathe\Framework\Router\UrlGenerator;
+use Fagathe\Framework\Twig\Exception\TwigException;
 use Fagathe\Framework\Twig\Twig;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Twig\Error\LoaderError;
 
 abstract class AbstractController
 {
+    /**
+     * @return Logger
+     */
+    protected function getLogger(): Logger
+    {
+        return new Logger;
+    }
 
     /**
      * getUser

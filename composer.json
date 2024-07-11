@@ -1,27 +1,26 @@
 {
-    "name": "fagathe/framework",
-    "description": "Mon super framework",
-    "autoload": {
-        "psr-4": {
-            "App\\": "src/",
-            "Fagathe\\Framework\\": "core/"
-        }
-    },
-    "authors": [
-        {
-            "name": "AGATHE Frédérick",
-            "email": "fagathe@meilleurtaux.com"
-        }
-    ],
-    "minimum-stability": "beta",
-    "require": {
-        "symfony/http-foundation": "^7.0",
-        "twig/twig": "^3",
-        "symfony/filesystem": "^7.0",
-        "cocur/slugify": "^4.5",
-        "vlucas/phpdotenv": "^5.6"
-    },
-    "require-dev": {
-        "symfony/var-dumper": "^7.0"
+  "name": "fagathe/framework",
+  "description": "Mon super framework",
+  "autoload": {
+    "psr-4": {
+      "Fagathe\\Framework\\": "src/"
     }
+  },
+  "authors": [
+    {
+      "name": "AGATHE Frédérick",
+      "email": "fagathe@meilleurtaux.com"
+    }
+  ],
+  "minimum-stability": "beta",
+  "require": {
+    "symfony/http-foundation": "^7.0",
+    "twig/twig": "^3",
+    "symfony/filesystem": "^7.0",
+    "cocur/slugify": "^4.5",
+    "vlucas/phpdotenv": "^5.6"
+  },
+  "require-dev": {
+    "symfony/var-dumper": "^7.0"
+  }
 }

@@ -1,6 +1,7 @@
 <?php
 namespace Fagathe\Framework\Router;
 
+use Fagathe\Framework\Logger\Logger;
 use Fagathe\Framework\Router\Exception\UrlGeneratorException;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -13,10 +14,12 @@ final class UrlGenerator
     public const RELATIVE_URL = 1;
 
     public Request $request;
+    private Logger $logger;
 
     public function __construct()
     {
         $this->request = Request::createFromGlobals();
+        $this->logger = new Logger;
     }
 
     public function generate(string $name, array $parameters = [], int $referenceType = self::RELATIVE_URL): string

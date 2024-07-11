@@ -30,7 +30,7 @@ final class DefaultController extends AbstractController
         if ($form->isSubmitted()) {
         }
 
-        return $this->render('index.twig', compact('form'));
+        return $this->render('web/index.twig', compact('form'));
     }
 
     /**
