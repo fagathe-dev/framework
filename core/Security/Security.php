@@ -4,6 +4,7 @@ namespace Fagathe\Framework\Security;
 use App\Entity\User;
 use App\Model\UserModel;
 use Fagathe\Framework\Http\Session;
+use Fagathe\Framework\Security\Exception\AccessDeniedException;
 use Fagathe\Framework\Security\Exception\SecurityException;
 use Fagathe\Framework\Security\Exception\UnauthorizedException;
 
@@ -19,11 +20,11 @@ final class Security
     }
 
     /**
-     * @param ?object $user
+     * @param null|object $user
      * 
      * @return bool
      */
-    private function checkSecurityValidity(mixed $user): bool
+    private function checkSecurityValidity(?object $user): bool
     {
         $classImplements = class_implements($user);
         if ($classImplements !== false && in_array(UserInterface::class, $classImplements)) {
@@ -35,7 +36,7 @@ final class Security
     /**
      * @return User|null
      */
-    public function getUser(): ?User
+    public function getUser(): ?UserInterface
     {
         $token = $this->session->get(Auth::AUTH_TOKEN_KEY);
         if (!$token) {
@@ -68,18 +69,29 @@ final class Security
      */
     public function isGranted(string $role): bool
     {
-        $user = $this->getUser();
-        if ($user === null) {
-            throw new UnauthorizedException();
-        } 
-        
-        if ($user) {
-            $roles = $user->getRoles();
+        try {
+            $user = $this->getUser();
+            if ($user === null) {
+                throw new UnauthorizedException();
+            }
+            $userRole = $user->getRole();
+
+            if ($userRole === null || $userRole === $role) {
+                throw new AccessDeniedException();
+            }
+
             return true;
+        } catch (SecurityException $e) {
+            $e->render();
+            exit(0);
+        } catch (AccessDeniedException $e) {
+            $e->render();
+            exit(0);
+        } catch (UnauthorizedException $e) {
+            $e->render();
+            exit(0);
         }
-        if ($roles === null || !in_array($role, $roles)) {
-            throw new \Exception('Access denied.');
-        }
+
     }
 
 }

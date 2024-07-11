@@ -8,7 +8,8 @@ abstract class AbstractEntity
 
     use Helpers;
 
-    private $id;
+    private ?int $id;
+
     /**
      * __construct
      * @param  mixed $data
