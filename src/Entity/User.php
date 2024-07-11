@@ -4,21 +4,22 @@ namespace App\Entity;
 
 use DateTimeImmutable;
 use Fagathe\Framework\Database\AbstractEntity;
+use Fagathe\Framework\Security\Roles;
 use Fagathe\Framework\Security\UserInterface;
 
 class User extends AbstractEntity implements UserInterface
 {
 
-    private $firstname;
-    private $lastname;
-    private $username;
-    private $email;
-    private $password;
-    private $confirmed;
-    private $token;
-    private $roles;
-    private $created_at;
-    private $updated_at;
+    private ?string $firstname;
+    private ?string $lastname;
+    private ?string $username;
+    private ?string $email;
+    private ?string $password;
+    private ?bool $confirmed;
+    private ?string $token;
+    private ?string $role;
+    private ?DateTimeImmutable $created_at;
+    private ?DateTimeImmutable $updated_at;
 
     /**
      * Get the value of firstname
@@ -63,28 +64,38 @@ class User extends AbstractEntity implements UserInterface
     /**
      * Get the value of role
      */
-    public function getRoles(): ?array
+    public function getRole(): ?string
     {
-        if (is_string($this->roles)) {
-            $this->roles = json_decode($this->roles);
-        }
-        return $this->roles;
+        return $this->role;
     }
 
     /**
      * Set the value of role
-     *
-     * @return  self
+     * @param string|null $role
+     * 
+     * @return self
      */
-    public function setRoles(?string $roles): self
+    public function setRole(?string $role = null): self
     {
-        if ($roles !== null) {
-            $this->roles = json_decode($roles);
+        if ($role === null) {
+            $this->role = Roles::ROLE_PUBLIC->name();
         } else {
-            $this->roles = null;
+            $this->role = $role;
         }
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getRoleLabel(): ?string
+    {
+        $role = $this->getRole();
+        if (!is_null($role) && is_string($role)) {
+            return Roles::matchLabel($role);
+        }
+        return null;
     }
 
     /**
