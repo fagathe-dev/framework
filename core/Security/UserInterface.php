@@ -1,4 +1,5 @@
 <?php
+namespace Fagathe\Framework\Security;
 
 interface UserInterface
 {
@@ -7,10 +8,12 @@ interface UserInterface
 
     public function getUsername();
 
-    public function getPassword() :string;
+    public function getPassword(): ?string;
 
     public function setPassword(string $password);
 
-    public function getRoles():array;
+    public function getRoles(): ?array;
+
+    public function getToken(): ?string;
 
 }

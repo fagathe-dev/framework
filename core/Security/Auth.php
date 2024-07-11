@@ -18,8 +18,8 @@ final class Auth
     private const INVALID_CREDENTIALS = 'Identifiants incorrects.';
     private const LOGIN_PAGE = '/login';
     private const DEFAULT_REDIRECT_ROUTE = '/';
-    private const DEFAULT_AUTH_TOKEN_KEY = 'X_AUTH_TOKEN';
-    public const DEFAULT_REMEMBER_ME_KEY = 'REMEMBER_ME';
+    public const AUTH_TOKEN_KEY = 'X_AUTH_TOKEN';
+    public const REMEMBER_ME_KEY = 'REMEMBER_ME';
     private UserModel $userModel;
     private Session $session;
     private Request $request;
@@ -40,8 +40,10 @@ final class Auth
 
     private function persist(string $token): void
     {
+       $token = base64_decode($token);
         // Store user in session
-        $this->session->set(self::DEFAULT_AUTH_TOKEN_KEY, $token);
+        $this->session->set(self::AUTH_TOKEN_KEY, $token);
+        return;
     }
 
     /**
@@ -130,7 +132,7 @@ final class Auth
                 'username' => $user->getUsername(),
                 'expired_at' => (new \DateTimeImmutable())->modify('+2 month')->format('Y-m-d H:i:s')
             ]);
-            setcookie(self::DEFAULT_REMEMBER_ME_KEY, base64_encode($rememberMeData), expires_or_options: time() + 60 * 60 * 24 * 60);
+            setcookie(self::REMEMBER_ME_KEY, base64_encode($rememberMeData), expires_or_options: time() + 60 * 60 * 24 * 60);
 
             $this->logger->info(sprintf('%s  :::  Persist User Credentials  %s  remembered.', __METHOD__, $user->getUsername()));
         }
@@ -161,7 +163,7 @@ final class Auth
      */
     public function getRememberMe(): ?array
     {
-        $rememberMe = $this->request->cookies->get(self::DEFAULT_REMEMBER_ME_KEY);
+        $rememberMe = $this->request->cookies->get(self::REMEMBER_ME_KEY);
         if ($rememberMe !== null) {
 
             return json_decode(base64_decode($rememberMe), true);
@@ -175,7 +177,7 @@ final class Auth
     public static function logout(): void
     {
         $session = new Session();
-        $session->remove(self::DEFAULT_REMEMBER_ME_KEY);
+        $session->remove(self::REMEMBER_ME_KEY);
         (new RedirectResponse(self::DEFAULT_REDIRECT_ROUTE))->send();
         exit();
     }

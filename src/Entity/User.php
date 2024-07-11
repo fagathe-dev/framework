@@ -4,8 +4,9 @@ namespace App\Entity;
 
 use DateTimeImmutable;
 use Fagathe\Framework\Database\AbstractEntity;
+use Fagathe\Framework\Security\UserInterface;
 
-class User extends AbstractEntity
+class User extends AbstractEntity implements UserInterface
 {
 
     private $firstname;
