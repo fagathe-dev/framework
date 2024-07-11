@@ -43,6 +43,11 @@ enum Roles: string
         };
     }
 
+    /**
+     * @param string|object $role
+     * 
+     * @return string
+     */
     public static function matchLabel(string|object $role): string
     {
         if (is_string($role)) {
@@ -84,13 +89,14 @@ enum Roles: string
         $cases = static::cases();
         $excludedCases = static::EXCLUDED_ROLES;
         $choices = [];
+
         foreach ($cases as $case) {
             if (!in_array($case, $excludedCases)) {
                 $choices[$case->name()] = static::matchLabel($case);
             }
         }
 
-        return $choices;
+        return array_unique($choices);
     }
 
 }
