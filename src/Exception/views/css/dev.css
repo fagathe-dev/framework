@@ -1,0 +1,65 @@
+body {
+  padding: 0;
+}
+
+main {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+header {
+  width: 100%;
+  height: auto;
+  padding-block-end: 1rem;
+}
+
+section {
+  height: auto;
+  min-height: 20vh;
+  padding-block: 0.75vh 1rem;
+}
+
+.header-top {
+  width: 100%;
+  background-color: var(--bs-white);
+  color: var(--bs-dark);
+}
+
+.header-top .header-top-content {
+  padding: 0.5rem 0.35rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.header-main {
+  color: var(--bs-white);
+}
+
+.header-main-top {
+  background-color: #991b1b;
+}
+
+.header-main-top .container-fluid {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  padding: 0.5rem 0.35rem;
+  font-size: 1.05rem;
+}
+
+.exception-message {
+  font-size: 1.05rem;
+  height: auto;
+  padding-block: calc(4rem / 3) 1rem;
+  background-color: var(--bs-danger);
+}
+
+.exception-message .lead {
+  margin-block-end: 5px;
+}

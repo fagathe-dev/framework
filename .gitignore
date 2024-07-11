@@ -1,0 +1,8 @@
+/vendor
+/var/logs
+/app/database.php
+/app/mailer.php
+/launch-*.sh
+/var
+/logs
+/.env.*
