@@ -103,7 +103,7 @@ final class Router
                $controller = new $values[0]();
                $method = $values[1];
 
-               $this->logger->debug('Access to controller ' . $controller . '::' . $method . ' with params ' . json_encode($this->params));
+               $this->logger->debug('Access to controller ' . $controller::class . '::' . $method . ' with params ' . json_encode($this->params));
                return isset($this->params) ? $controller->$method($this->params) : $controller->$method();
           } catch (Exception $e) {
                $e->render();
