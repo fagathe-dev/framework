@@ -8,6 +8,9 @@ class Session
         $this->init();
     }
 
+    /**
+     * @return bool|null
+     */
     private function init(): ?bool
     {
         if (session_status() !== PHP_SESSION_DISABLED && session_status() !== PHP_SESSION_NONE) {
@@ -16,6 +19,9 @@ class Session
         return null;
     }
 
+    /**
+     * @return array|null
+     */
     public function all(): ?array
     {
         return $_SESSION;
@@ -81,13 +87,13 @@ class Session
     }
 
     /**
-     * @param string|array $value
+     * @param string|array $message
      * @param string $key
      * 
      * @return array
      */
-    public function addFlash(string|array $value, string $key = 'info'): void
+    public function addFlash(string|array $message, string $key = 'info'): void
     {
-        $_SESSION['flashes'] = [$key => $value];
+        $_SESSION['flashes'] = [$key => $message];
     }
 }

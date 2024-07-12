@@ -2,14 +2,14 @@
 namespace Fagathe\Framework\Controller;
 
 use Fagathe\Framework\Form\Form;
+use Fagathe\Framework\Http\Session;
 use Fagathe\Framework\Logger\Logger;
 use Fagathe\Framework\Router\UrlGenerator;
-use Fagathe\Framework\Twig\Exception\TwigException;
 use Fagathe\Framework\Twig\Twig;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Twig\Error\LoaderError;
 
 abstract class AbstractController
 {
@@ -80,6 +80,13 @@ abstract class AbstractController
         return $response->send();
     }
 
+    /**
+     * @param string $route
+     * @param array $params
+     * @param int $status
+     * 
+     * @return RedirectResponse
+     */
     protected function redirectToRoute(string $route, array $params = [], int $status = Response::HTTP_FOUND): RedirectResponse
     {
         return $this->redirect($this->generateUrl($route, $params), $status);
@@ -111,6 +118,33 @@ abstract class AbstractController
         $form->setData($data ?? []);
 
         return $form;
+    }
+
+    /**
+     * @param string $message
+     * @param string $type
+     * 
+     * @return void
+     */
+    public function addFlash(string $message, string $type = "info"): void
+    {
+        $this->getSession()->addFlash($message, $type);
+    }
+
+    /**
+     * @return Session
+     */
+    public function getSession(): Session
+    {
+        return new Session;
+    }
+
+    /**
+     * @return Request
+     */
+    public function getRequest(): Request
+    {
+        return Request::createFromGlobals();
     }
 
 }
