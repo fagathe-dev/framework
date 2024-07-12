@@ -35,7 +35,7 @@ final class Env
      * 
      * @return string
      */
-    public static function getEnv(string $key, bool $raiseException = true): string
+    public static function getEnv(string $key, bool $raiseException = false): string
     {
         try {
             if ($raiseException && !array_key_exists($key, $_ENV)) {

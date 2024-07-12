@@ -143,6 +143,14 @@ final class Twig
         $this->twig->addFunction($file_get_contents);
         $this->twig->addFilter($type);
         $this->twig->addGlobal('ERROR_TEMPLATE_DIR', defined('CUSTOM_ERROR_TEMPLATE_DIR') && APP_ENV !== 'dev' ? CUSTOM_ERROR_TEMPLATE_DIR : ERROR_TEMPLATE_DIR);
+        $this->twig->addGlobal('APP_NAME', APP_NAME);
+        $this->twig->addGlobal('APP_VERSION', APP_VERSION);
+        $this->twig->addGlobal('APP_SEO_TITLE', APP_SEO_TITLE);
+        $this->twig->addGlobal('APP_LINKEDIN_URL', APP_LINKEDIN_URL);
+        $this->twig->addGlobal('APP_GITHUB_URL', APP_GITHUB_URL);
+        $this->twig->addGlobal('APP_PHONE_NUMBER', APP_PHONE_NUMBER);
+        $this->twig->addGlobal('APP_EMAIL_CONTACT', APP_EMAIL_CONTACT);
+        $this->twig->addGlobal('APP_GOOGLE_TAGMANAGER', APP_GOOGLE_TAGMANAGER);
         $this->twig->addGlobal('app', $app);
 
         return $this->twig;
