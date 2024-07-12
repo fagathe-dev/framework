@@ -104,7 +104,7 @@ final class Twig
                 return $path;
             }
 
-            return DIRECTORY_SEPARATOR . $path;
+            return '/' . $path;
         });
 
         $url = new TwigFunction('url', function (string $name, array $parameters = [], bool $referenceType = true) {
