@@ -81,6 +81,20 @@ enum Roles: string
         return $labels;
     }
 
+    public static function getUserRoles():array {
+        $cases = static::cases();
+        $excludedCases = static::EXCLUDED_ROLES;
+        $choices = [];
+    
+        foreach ($cases as $case) {
+            if (!in_array($case, $excludedCases)) {
+                $choices[] = $case->value;
+            }
+        }
+    
+        return array_unique($choices);
+    }
+
     /**
      * @return array
      */
