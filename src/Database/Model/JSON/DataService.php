@@ -6,7 +6,7 @@ use Symfony\Component\Filesystem\Filesystem;
 final class DataService
 {
 
-    private const DEFAULT_PATH_PREFIX = DOCUMENT_ROOT . '/data/';
+    private const DEFAULT_PATH_PREFIX = DATA_DIR;
     private Filesystem $fs;
 
     public function __construct(private string $path)
